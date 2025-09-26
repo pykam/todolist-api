@@ -6,6 +6,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\TaskResource;
+use App\Http\Requests\StoreTaskRequest;
 
 class TaskController extends Controller
 {
@@ -21,19 +22,15 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'boolean:strict',
-        ]);
+        $validated = $request->validated();
 
         $task = Task::create($validated);
 
         return response()->json($task, 201);
-        
+
     }
 
     /**
@@ -47,9 +44,16 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(StoreTaskRequest $request, Task $task)
     {
-        //
+        $validated = $request->validated();
+    
+        $task->update($validated);
+
+        return response()->json([
+            'message' => 'Task updated successfully',
+            'data' => $task
+        ]);
     }
 
     /**
